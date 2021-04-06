@@ -52,9 +52,9 @@ body {
   margin-bottom: 10%;
 }
 
-.uncoveredCell{
-  width: 25px;
-  height: 25px;
+.coveredCell{
+  width: 40px;
+  height: 40px;
   background-color: #91b4bf;
   text-align: center;
   font-size: 120%;
@@ -65,14 +65,14 @@ body {
   table-layout: fixed;
 }
 
-.uncoveredCell:hover{
+.coveredCell:hover{
   background-color: red;
   transition-duration: 0.2s;
 }
 
 .emptyCell{
-  width: 25px;
-  height: 25px;
+  width: 40px;
+  height: 40px;
   background-color: #add8e6;
   text-align: center;
   font-size: 120%;

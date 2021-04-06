@@ -4,7 +4,7 @@ const dimensForLevel = [
   [20, 20],
   [50, 50]
 ];
-const minesForLevel = [10, 20, 300]
+const minesForLevel = [8, 20, 300]
 
 var rows, columns;
 var mineCount;
@@ -16,10 +16,23 @@ var uncovered = []
 
 var initialized = false;
 
+var imageID = {
+  "bomb": "bombIMG"
+}
+var images = {}
+
 window.onload = function() {
   element("easyGameStart").onclick = () => start(0);
   element("mediumGameStart").onclick = () => start(1);
   element("hardGameStart").onclick = () => start(2);
+
+  initializeImages();
+}
+
+function initializeImages(){
+  for(let key in imageID){
+    images[key] = document.getElementById(imageID[key])
+  }
 }
 
 function start(level) {
@@ -32,7 +45,7 @@ function start(level) {
     var row = document.createElement("tr")
     for (let c = 0; c < columns; ++c) {
       var element = document.createElement("td");
-      element.className = "uncoveredCell"
+      element.className = "coveredCell"
       element.onclick = () => click([r, c], map, mineMap, uncovered)
       row.appendChild(element);
     }
@@ -85,18 +98,32 @@ function initializeMap(notAllowed, map, mineMap, uncovered) {
 
 function click(coordinates, map, mineMap, uncovered) {
   console.log(coordinates)
+  var [row, col] = coordinates
   if (!initialized) {
     initializeMap(coordinates, map, mineMap, uncovered);
     renderMap();
     initialized = true;
+  }else{
+    uncovered[row][col] = true;
+    renderMap();
   }
 }
 
 function renderMap() {
   for (let r = 0; r < rows; ++r) {
     for (let c = 0; c < columns; ++c) {
-      document.getElementById("gameTable").rows[r].cells[c].className = mineMap[r][c] ? "uncoveredCell" : "emptyCell"
-      document.getElementById("gameTable").rows[r].cells[c].innerHTML = map[r][c]
+      let element = document.getElementById("gameTable").rows[r].cells[c];
+      element.innerHTML = ""
+      if(!uncovered[r][c]){
+        element.className = "coveredCell"
+        continue
+      }
+      element.className = "emptyCell"
+      if(mineMap[r][c]){
+        element.appendChild(images.bomb.cloneNode(false))
+      }else{
+        element.innerHTML = map[r][c]
+      }
     }
   }
 }
