@@ -1,0 +1,91 @@
+body {
+  background-image: url("./images/ground.jpg");
+  background-size: auto;
+  text-align: center;
+}
+
+#heading{
+  font-size: 500%;
+  color: lightblue;
+}
+
+.stepButtons{
+  margin: 2%;
+  background-color: lightgrey;
+  padding: 1%;
+  border-radius: 100px;
+  border-width: 5px;
+  border-color: blue;
+  transition-duration: 0.5s;
+}
+
+.stepButtons:hover{
+  background-color: orange;
+  border-color: red;
+  transition-duration: 0.5s;
+}
+
+.optionButtons{
+  margin: 2%;
+  padding-top: 4%;
+  padding-bottom: 4%;
+  padding-left: 2%;
+  padding-right: 2%;
+  border-radius: 100px;
+  border-width: 7px;
+  border-color: purple;
+  font-size: 200%;
+  font-family: arial;
+  background-color: lightblue;
+  font-weight: bolder;
+  transition-duration: 0.5s;
+}
+
+.optionButtons:hover{
+  background-color: pink;
+  transition-duration: 0.5s;
+}
+
+#startingFormat{
+  vertical-align: middle;
+  margin-top: 10%;
+  margin-bottom: 10%;
+}
+
+.uncoveredCell{
+  width: 25px;
+  height: 25px;
+  background-color: #91b4bf;
+  text-align: center;
+  font-size: 120%;
+  font-family: Tahoma;
+  border: thin solid black;
+  margin: 0px;
+  transition-duration: 0.2s;
+  table-layout: fixed;
+}
+
+.uncoveredCell:hover{
+  background-color: red;
+  transition-duration: 0.2s;
+}
+
+.emptyCell{
+  width: 25px;
+  height: 25px;
+  background-color: #add8e6;
+  text-align: center;
+  font-size: 120%;
+  font-family: Tahoma;
+  border: thin solid black;
+  margin: 0px;
+  transition-duration: 0.2s;
+  table-layout: fixed;
+}
+
+#gameTable{
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  table-layout: fixed;
+}
