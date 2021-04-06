@@ -16,23 +16,13 @@ var uncovered = []
 
 var initialized = false;
 
-var imageID = {
-  "bomb": "bombIMG"
-}
-var images = {}
 
 window.onload = function() {
-  element("easyGameStart").onclick = () => start(0);
-  element("mediumGameStart").onclick = () => start(1);
-  element("hardGameStart").onclick = () => start(2);
+  document.getElementById("easyGameStart").onclick = () => start(0);
+  document.getElementById("mediumGameStart").onclick = () => start(1);
+  document.getElementById("hardGameStart").onclick = () => start(2);
 
   initializeImages();
-}
-
-function initializeImages(){
-  for(let key in imageID){
-    images[key] = document.getElementById(imageID[key])
-  }
 }
 
 function start(level) {
@@ -41,16 +31,7 @@ function start(level) {
   [rows, columns] = dimensForLevel[level];
   mineCount = minesForLevel[level];
 
-  for (let r = 0; r < rows; ++r) {
-    var row = document.createElement("tr")
-    for (let c = 0; c < columns; ++c) {
-      var element = document.createElement("td");
-      element.className = "coveredCell"
-      element.onclick = () => click([r, c], map, mineMap, uncovered)
-      row.appendChild(element);
-    }
-    document.getElementById("gameTable").appendChild(row);
-  }
+  initializeTable();
 }
 
 function initializeMap(notAllowed, map, mineMap, uncovered) {
@@ -101,33 +82,27 @@ function click(coordinates, map, mineMap, uncovered) {
   var [row, col] = coordinates
   if (!initialized) {
     initializeMap(coordinates, map, mineMap, uncovered);
-    renderMap();
     initialized = true;
-  }else{
-    uncovered[row][col] = true;
-    renderMap();
   }
+  uncoverAdjacents(map, uncovered, coordinates)
+  renderMap(uncovered, map, mineMap);
 }
 
-function renderMap() {
-  for (let r = 0; r < rows; ++r) {
-    for (let c = 0; c < columns; ++c) {
-      let element = document.getElementById("gameTable").rows[r].cells[c];
-      element.innerHTML = ""
-      if(!uncovered[r][c]){
-        element.className = "coveredCell"
-        continue
-      }
-      element.className = "emptyCell"
-      if(mineMap[r][c]){
-        element.appendChild(images.bomb.cloneNode(false))
-      }else{
-        element.innerHTML = map[r][c]
+function uncoverAdjacents(map, uncovered, currentCoord){
+  [row, col] = currentCoord
+  uncovered[row][col] = true
+
+  var zeros = map[row][col] > 0 ? [] : [currentCoord]
+  while(zeros.length > 0){
+    [r, c] = zeros.shift()
+    for(let ri = r - 1; ri < r + 2; ++ri){
+      for(let ci = c - 1; ci < c + 2; ++ci){
+        if(0 <= ri && ri < rows && 0 <= ci && ci < columns && !uncovered[ri][ci]){
+          uncovered[ri][ci] = true
+          if(map[ri][ci] == 0)
+            zeros.push([ri, ci]);
+        }
       }
     }
   }
-}
-
-function element(id) {
-  return document.getElementById(id)
 }
