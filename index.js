@@ -4,7 +4,7 @@ const dimensForLevel = [
   [20, 20],
   [50, 50]
 ];
-const minesForLevel = [8, 20, 300]
+const minesForLevel = [8, 50, 500]
 
 var rows, columns;
 var mineCount;
@@ -17,14 +17,17 @@ var flagged = []
 
 var initialized = false;
 
+var finished = false;
 
 window.onload = function() {
   document.getElementById("easyGameStart").onclick = () => start(0);
   document.getElementById("mediumGameStart").onclick = () => start(1);
   document.getElementById("hardGameStart").onclick = () => start(2);
 
-  document.getElementById("winScreen").onclick = () => restart();
-  document.getElementById("loseScreen").onclick = () => restart();
+  document.getElementById("winScreen").onclick = restart;
+  document.getElementById("loseScreen").onclick = restart;
+
+  document.getElementById("restartGame").onclick = restart;
 
   initializeImages();
 }
@@ -36,6 +39,7 @@ function restart(){
   document.getElementById("loseScreen").hidden = true;
 
   initialized = false;
+  finished = false;
 }
 
 function start(level) {
@@ -104,14 +108,28 @@ function initializeMap(notAllowed) {
 }
 
 function click(coordinates) {
+  if(finished)
+    return;
   var [row, col] = coordinates
   if (!initialized) {
     initializeMap(coordinates);
     initialized = true;
   }
-  if(mineMap[row][col])
+  if(mineMap[row][col]){
     document.getElementById("loseScreen").hidden = false;
+    finished = true;
+  }
   uncoverAdjacents(map, uncovered, coordinates)
+
+  let allUncovered = true;
+  uncovered.forEach(function(row, rInd) { row.forEach(function(obj, cInd){
+    allUncovered = allUncovered && (obj || mineMap[rInd][cInd])
+  })})
+  if(allUncovered){
+    document.getElementById("winScreen").hidden = false;
+    finished = true;
+  }
+
   renderMap(uncovered, map, mineMap, flagged)
 }
 

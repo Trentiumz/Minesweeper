@@ -106,9 +106,10 @@ body {
 .resultContainer{
   position: absolute;
   background-color: rgb(144, 238, 144, 0.5);
-  top: 30%;
-  left: 40%;
-  right: 40%;
+  top: 25%;
+  left:0;
+  right:0;
+  width: 400px;
   z-index: 10;
   margin: auto;
   padding-top: 2%;
