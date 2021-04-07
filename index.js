@@ -27,7 +27,6 @@ window.onload = function() {
   document.getElementById("loseScreen").onclick = () => restart();
 
   initializeImages();
-  update()
 }
 
 function restart(){
@@ -39,12 +38,6 @@ function restart(){
   initialized = false;
 }
 
-function update(){
-  if(initialized)
-    renderMap(uncovered, map, mineMap, flagged);
-  setTimeout(update, 50)
-}
-
 function start(level) {
   document.getElementById("startingFormat").hidden = true;
   document.getElementById("aiFormat").hidden = false;
@@ -54,7 +47,7 @@ function start(level) {
   initializeTable();
 }
 
-function initializeMap(notAllowed, map, mineMap, uncovered, flagged) {
+function initializeMap(notAllowed) {
   map.splice(0, map.length);
   mineMap.splice(0, mineMap.length);
   uncovered.splice(0, uncovered.length)
@@ -110,21 +103,22 @@ function initializeMap(notAllowed, map, mineMap, uncovered, flagged) {
   }
 }
 
-function click(coordinates, map, mineMap, uncovered, flagged) {
-  console.log(coordinates)
+function click(coordinates) {
   var [row, col] = coordinates
   if (!initialized) {
-    initializeMap(coordinates, map, mineMap, uncovered, flagged);
+    initializeMap(coordinates);
     initialized = true;
   }
   if(mineMap[row][col])
     document.getElementById("loseScreen").hidden = false;
   uncoverAdjacents(map, uncovered, coordinates)
+  renderMap(uncovered, map, mineMap, flagged)
 }
 
-function rightClick(coordinates, flagged){
+function rightClick(coordinates){
   [row, column] = coordinates
   flagged[row][column] = true
+  renderMap(uncovered, map, mineMap, flagged)
 }
 
 function uncoverAdjacents(map, uncovered, currentCoord){
