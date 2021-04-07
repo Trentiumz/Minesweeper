@@ -19,7 +19,7 @@ var initialized = false;
 var finished = false;
 var startTime = -1;
 
-var ai = new AI();
+var ai;
 
 window.onload = function() {
   document.getElementById("easyGameStart").onclick = () => start(0);
@@ -30,6 +30,9 @@ window.onload = function() {
   document.getElementById("loseScreen").onclick = restart;
 
   document.getElementById("restartGame").onclick = restart;
+  document.getElementById("aiMove").onclick = doMove;
+
+  ai = new AI();
 
   initializeImages();
 }
@@ -171,4 +174,13 @@ function uncoverAdjacents(map, uncovered, currentCoord){
 function revealResult(screenID){
   document.getElementById(screenID).hidden = false;
   finished = true;
+}
+
+function doMove(){
+  if(!initialized || finished){
+    return;
+  }
+
+  var uncoveredInfo = map.map((row, rInd) => row.map((element, cInd) => uncovered[rInd][cInd] ? element : -1))
+  ai.getMove(uncovered, uncoveredInfo);
 }
