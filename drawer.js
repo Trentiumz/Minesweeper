@@ -34,6 +34,8 @@ function renderMap(uncovered, map, mineMap, flagged) {
 }
 
 function initializeTable(){
+  document.getElementById("gameTable").innerHTML = "";
+
   for (let r = 0; r < rows; ++r) {
     var row = document.createElement("tr")
     for (let c = 0; c < columns; ++c) {

@@ -23,8 +23,20 @@ window.onload = function() {
   document.getElementById("mediumGameStart").onclick = () => start(1);
   document.getElementById("hardGameStart").onclick = () => start(2);
 
+  document.getElementById("winScreen").onclick = () => restart();
+  document.getElementById("loseScreen").onclick = () => restart();
+
   initializeImages();
   update()
+}
+
+function restart(){
+  document.getElementById("startingFormat").hidden = false;
+  document.getElementById("aiFormat").hidden = true;
+  document.getElementById("winScreen").hidden = true;
+  document.getElementById("loseScreen").hidden = true;
+
+  initialized = false;
 }
 
 function update(){
@@ -43,8 +55,13 @@ function start(level) {
 }
 
 function initializeMap(notAllowed, map, mineMap, uncovered, flagged) {
+  map.splice(0, map.length);
+  mineMap.splice(0, mineMap.length);
+  uncovered.splice(0, uncovered.length)
+  flagged.splice(0, flagged.length)
+
   // Set where the mines are
-  [safeRow, safeCol] = notAllowed
+  var [safeRow, safeCol] = notAllowed
   let coordinates = new Set();
   while (coordinates.size < mineCount) {
     coordinates.add(Math.floor(Math.random() * rows * columns));
@@ -100,6 +117,8 @@ function click(coordinates, map, mineMap, uncovered, flagged) {
     initializeMap(coordinates, map, mineMap, uncovered, flagged);
     initialized = true;
   }
+  if(mineMap[row][col])
+    document.getElementById("loseScreen").hidden = false;
   uncoverAdjacents(map, uncovered, coordinates)
 }
 

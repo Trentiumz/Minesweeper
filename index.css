@@ -2,6 +2,8 @@ body {
   background-image: url("./images/ground.jpg");
   background-size: auto;
   text-align: center;
+
+  margin: auto;
 }
 
 #heading{
@@ -99,4 +101,49 @@ body {
   margin-left: auto;
   margin-right: auto;
   table-layout: fixed;
+}
+
+.resultContainer{
+  position: absolute;
+  background-color: rgb(144, 238, 144, 0.5);
+  top: 30%;
+  left: 40%;
+  right: 40%;
+  z-index: 10;
+  margin: auto;
+  padding-top: 2%;
+  padding-bottom: 2%;
+
+  border-radius: 35%;
+  border-width: 8px;
+  border-style: solid;
+  border-color: brown;
+
+  vertical-align: center;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  transition-duration: 0.5s;
+}
+
+.resultContainer:hover{
+  background-color: rgb(80, 95.2, 80, 0.5);
+  border-color: red;
+  transition-duration: 0.5s;
+
+  color: white;
+}
+
+.resultHeader{
+  font-size: 500%;
+}
+
+.resultDescription{
+  font-size: 150%;
+  font-weight: bold;
 }
