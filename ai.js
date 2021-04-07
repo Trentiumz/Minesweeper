@@ -32,23 +32,19 @@ class AI{
     var queue = [startingCoords]
 
     while(queue.length > 0){
-      [r, c] = queue.shift()
+      let [r, c] = queue.shift()
       for(let rn = r - 1; rn <= r + 1; ++rn)
         for(let cn = c - 1; cn <= c + 1; ++cn)
-          if(0 <= rn && rn < uncovered.length && 0 <= cn && cn < uncovered[rn].length)
-            if(this.borderLabelling[rn][cn] == -1 && this.isBorder[rn][cn]){
-              this.borderLabelling[rn][cn] = label
-              queue.push([rn, cn])
-            }else if(this.uncovered[rn][cn]){
+          if(0 <= rn && rn < uncovered.length && 0 <= cn && cn < uncovered[rn].length){
+            if(this.uncovered[rn][cn]){
               for(let rnn = rn - 1; rnn <= rn + 1; ++rnn)
                 for(let cnn = cn - 1; cnn <= cn + 1; ++cnn)
                   if(0 <= rnn && rnn < uncovered.length && 0 <= cnn && cnn < uncovered[rn].length)
                     if(this.borderLabelling[rnn][cnn] == -1 && this.isBorder[rnn][cnn]){
-                      this.borderLabelling[rnn][cnn] == label
+                      this.borderLabelling[rnn][cnn] = label
                       queue.push([rnn, cnn])
                     }
-            }
-    }
+            }}}
   }
 
   labelBorders(){
