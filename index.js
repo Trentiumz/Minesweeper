@@ -116,8 +116,7 @@ function click(coordinates) {
     initialized = true;
   }
   if(mineMap[row][col]){
-    document.getElementById("loseScreen").hidden = false;
-    finished = true;
+    revealResult("loseScreen")
   }
   uncoverAdjacents(map, uncovered, coordinates)
 
@@ -126,8 +125,7 @@ function click(coordinates) {
     allUncovered = allUncovered && (obj || mineMap[rInd][cInd])
   })})
   if(allUncovered){
-    document.getElementById("winScreen").hidden = false;
-    finished = true;
+    revealResult("winScreen")
   }
 
   renderMap(uncovered, map, mineMap, flagged)
@@ -156,4 +154,10 @@ function uncoverAdjacents(map, uncovered, currentCoord){
       }
     }
   }
+}
+
+function revealResult(screenID){
+  document.getElementById(screenID).hidden = false;
+  document.body.scrollTop = document.documentElement.scrollTop = 0;
+  finished = true;
 }
