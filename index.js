@@ -173,27 +173,3 @@ function revealResult(screenID){
   document.body.scrollTop = document.documentElement.scrollTop = 0;
   finished = true;
 }
-
-function updateUserMineCount(){
-  flagged.forEach((row, rInd) => row.forEach((obj, cInd) => flagged[rInd][cInd] = flagged[rInd][cInd] && (!uncovered[rInd][cInd])))
-  let flags = 0
-  flagged.forEach((row) => row.forEach((obj) => flags += obj))
-  document.getElementById("bombs").innerHTML = mineCount - flags
-}
-
-function updateTimer(){
-  if(finished){
-    return;
-  }
-  document.getElementById("time").innerHTML = formatTime(Math.floor((new Date().getTime() - startTime) * 0.001))
-  setTimeout(updateTimer, 100)
-}
-
-function formatTime(seconds){
-  minutes = Math.floor(seconds / 60)
-  seconds = seconds - minutes * 60
-  if(seconds < 10){
-    seconds = "0" + seconds;
-  }
-  return minutes + ":" + seconds;
-}
