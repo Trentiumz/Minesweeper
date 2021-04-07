@@ -13,6 +13,7 @@ var mineCount;
 var map = [];
 var mineMap = [];
 var uncovered = []
+var flagged = []
 
 var initialized = false;
 
@@ -23,6 +24,13 @@ window.onload = function() {
   document.getElementById("hardGameStart").onclick = () => start(2);
 
   initializeImages();
+  update()
+}
+
+function update(){
+  if(initialized)
+    renderMap(uncovered, map, mineMap, flagged);
+  setTimeout(update, 50)
 }
 
 function start(level) {
@@ -34,7 +42,7 @@ function start(level) {
   initializeTable();
 }
 
-function initializeMap(notAllowed, map, mineMap, uncovered) {
+function initializeMap(notAllowed, map, mineMap, uncovered, flagged) {
   // Set where the mines are
   [safeRow, safeCol] = notAllowed
   let coordinates = new Set();
@@ -75,17 +83,29 @@ function initializeMap(notAllowed, map, mineMap, uncovered) {
     topLeft += altered[r + 2][1] + altered[r + 2][2]
     topLeft -= altered[r - 1][1] + altered[r - 1][2]
   }
+
+  for(let r = 0; r < rows; ++r){
+    var row = []
+    for(let c = 0; c < columns; ++c){
+      row.push(false)
+    }
+    flagged.push(row)
+  }
 }
 
-function click(coordinates, map, mineMap, uncovered) {
+function click(coordinates, map, mineMap, uncovered, flagged) {
   console.log(coordinates)
   var [row, col] = coordinates
   if (!initialized) {
-    initializeMap(coordinates, map, mineMap, uncovered);
+    initializeMap(coordinates, map, mineMap, uncovered, flagged);
     initialized = true;
   }
   uncoverAdjacents(map, uncovered, coordinates)
-  renderMap(uncovered, map, mineMap);
+}
+
+function rightClick(coordinates, flagged){
+  [row, column] = coordinates
+  flagged[row][column] = true
 }
 
 function uncoverAdjacents(map, uncovered, currentCoord){
