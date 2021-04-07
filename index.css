@@ -133,9 +133,9 @@ body {
 }
 
 .resultContainer:hover{
-  background-color: rgb(80, 95.2, 80, 0.5);
+  background-color: rgb(80, 95.2, 80, 0.8);
   border-color: red;
-  transition-duration: 0.5s;
+  transition-duration: 0.3s;
 
   color: white;
 }
@@ -147,4 +147,23 @@ body {
 .resultDescription{
   font-size: 150%;
   font-weight: bold;
+}
+
+.infoIcon{
+  width: 60px;
+  height: 60px;
+
+  resize: none;
+}
+
+.infoTable th{
+  color: white;
+  font-size: 300%;
+}
+
+.infoTable{
+  border-spacing: 10px;
+
+  margin-left: auto;
+  margin-right: auto;
 }

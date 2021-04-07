@@ -4,6 +4,7 @@
 <head>
   <title>Minesweeper Bot!</title>
   <link href="./index.css" rel="stylesheet" type="text/css" />
+  <script src="ai.js"></script>
   <script src="drawer.js"></script>
   <script src="index.js"></script>
 </head>
@@ -16,6 +17,24 @@
     <button type="button" id="hardGameStart" class="optionButtons">Hard Game</button>
   </div>
   <div id="aiFormat" hidden>
+    <table class="infoTable">
+      <tr>
+        <th>
+          <img src="./images/timer.png" class="infoIcon"/>
+        </th>
+        <th id="time">
+          0:00
+        </th>
+        <th />
+        <th />
+        <th>
+          <img src="./images/bomb.png" class="infoIcon"/>
+        </th>
+        <th id="bombs">
+          0
+        </th>
+      </tr>
+    </table>
     <table id="gameTable"></table>
     <button type="button" id="aiMove" class="stepButtons">Tell the AI to move :></button>
     <button type="button" id="restartGame" class="stepButtons">Restart</button>

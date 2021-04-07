@@ -16,8 +16,10 @@ var uncovered = []
 var flagged = []
 
 var initialized = false;
-
 var finished = false;
+var startTime = -1;
+
+var ai = new AI();
 
 window.onload = function() {
   document.getElementById("easyGameStart").onclick = () => start(0);
@@ -47,6 +49,10 @@ function start(level) {
   document.getElementById("aiFormat").hidden = false;
   [rows, columns] = dimensForLevel[level];
   mineCount = minesForLevel[level];
+
+  document.getElementById("bombs").innerHTML = mineCount
+  startTime = new Date().getTime();
+  updateTimer();
 
   initializeTable();
 }
@@ -120,6 +126,8 @@ function click(coordinates) {
   }
   uncoverAdjacents(map, uncovered, coordinates)
 
+  updateUserMineCount();
+
   let allUncovered = true;
   uncovered.forEach(function(row, rInd) { row.forEach(function(obj, cInd){
     allUncovered = allUncovered && (obj || mineMap[rInd][cInd])
@@ -132,8 +140,12 @@ function click(coordinates) {
 }
 
 function rightClick(coordinates){
+  if(finished)
+    return;
   [row, column] = coordinates
-  flagged[row][column] = true
+  flagged[row][column] = !flagged[row][column]
+
+  updateUserMineCount();
   renderMap(uncovered, map, mineMap, flagged)
 }
 
@@ -160,4 +172,28 @@ function revealResult(screenID){
   document.getElementById(screenID).hidden = false;
   document.body.scrollTop = document.documentElement.scrollTop = 0;
   finished = true;
+}
+
+function updateUserMineCount(){
+  flagged.forEach((row, rInd) => row.forEach((obj, cInd) => flagged[rInd][cInd] = flagged[rInd][cInd] && (!uncovered[rInd][cInd])))
+  let flags = 0
+  flagged.forEach((row) => row.forEach((obj) => flags += obj))
+  document.getElementById("bombs").innerHTML = mineCount - flags
+}
+
+function updateTimer(){
+  if(finished){
+    return;
+  }
+  document.getElementById("time").innerHTML = formatTime(Math.floor((new Date().getTime() - startTime) * 0.001))
+  setTimeout(updateTimer, 100)
+}
+
+function formatTime(seconds){
+  minutes = Math.floor(seconds / 60)
+  seconds = seconds - minutes * 60
+  if(seconds < 10){
+    seconds = "0" + seconds;
+  }
+  return minutes + ":" + seconds;
 }
