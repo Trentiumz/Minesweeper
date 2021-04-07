@@ -104,16 +104,18 @@ body {
 }
 
 .resultContainer{
-  position: absolute;
+  position: fixed;
   background-color: rgb(144, 238, 144, 0.5);
-  top: 25%;
+  top: 0;
+  bottom: 0;
   left:0;
   right:0;
   width: 400px;
+  height: 300px;
   z-index: 10;
   margin: auto;
-  padding-top: 2%;
-  padding-bottom: 2%;
+  padding-top: 1%;
+  padding-bottom: 1%;
 
   border-radius: 35%;
   border-width: 8px;

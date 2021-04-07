@@ -170,6 +170,5 @@ function uncoverAdjacents(map, uncovered, currentCoord){
 
 function revealResult(screenID){
   document.getElementById(screenID).hidden = false;
-  document.body.scrollTop = document.documentElement.scrollTop = 0;
   finished = true;
 }
