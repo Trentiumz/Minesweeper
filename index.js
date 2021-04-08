@@ -32,8 +32,6 @@ window.onload = function() {
   document.getElementById("restartGame").onclick = restart;
   document.getElementById("aiMove").onclick = doMove;
 
-  ai = new AI();
-
   initializeImages();
 }
 
@@ -56,6 +54,8 @@ function start(level) {
   document.getElementById("bombs").innerHTML = mineCount
   startTime = new Date().getTime();
   updateTimer();
+
+  ai = new AI(rows, columns)
 
   initializeTable();
 }
@@ -185,5 +185,5 @@ function doMove(){
   }
 
   var uncoveredInfo = map.map((row, rInd) => row.map((element, cInd) => uncovered[rInd][cInd] ? element : -1))
-  ai.getMove(uncovered, uncoveredInfo);
+  ai.getMove(uncovered, uncoveredInfo, flagged);
 }
