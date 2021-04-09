@@ -6,6 +6,8 @@ const dimensForLevel = [
 ];
 const minesForLevel = [8, 50, 500]
 
+const aiConsider = 10
+
 var rows, columns;
 var mineCount;
 
@@ -55,7 +57,7 @@ function start(level) {
   startTime = new Date().getTime();
   updateTimer();
 
-  ai = new AI(rows, columns)
+  ai = new AI(rows, columns, aiConsider)
 
   initializeTable();
 }
