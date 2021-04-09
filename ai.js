@@ -31,7 +31,6 @@ class AI {
 
     // coordinates[r][c] = [r, c]; the difference is that it's just one object for each coord
     this.coordinates = range(0, rows).map((row, rInd) => range(0, columns).map((obj, cInd) => [rInd, cInd]))
-    console.log(this.coordinates)
 
     document.getElementById("aiFormat").appendChild(this.aiTable)
     console.log("added")
@@ -151,17 +150,34 @@ class AI {
     return [considerNodes, borderFilled]
   }
 
-  getForcedNodes(nodesToBruteForce, bordersToConsider){
+  // Params: The nodes to iterate all possibilities for, the borders to consider, # of mines information
+  convertToLinear(nodesToBruteForce, bordersToConsider, knownNumbers){
+    var affects = nodesToBruteForce.map(function(coord){
+      let [fr, fc] = coord
+      var toreturn = []
+      for(let i = 0; i < bordersToConsider.length; ++i){
+        let [sr, sc] = bordersToConsider[i]
+        if(Math.abs(sr - fr) <= 1 && Math.abs(sc - fc) <= 1){
+          toreturn.push(i)
+        }
+      }
+      return toreturn
+    })
 
+    var maximums = bordersToConsider.map((coord) => knownNumbers[coord[0]][coord[1]])
+
+    return [affects, maximums]
+  }
+
+  getForcedNodes(affects, maximums, iterationsWith, currentIndex){
+    
   }
 
   getMove(uncovered, knownSquares, flagged) {
     var borderingCoordinates = []
     var isBorder = this.getBorders(knownSquares, borderingCoordinates);
 
-    console.log(borderingCoordinates)
     borderingCoordinates.sort(this.getBorderComparator(this.rows, this.columns))
-    console.log(borderingCoordinates)
 
     var chosenBorder = borderingCoordinates[0]
     var [nodesBruteForce, bordersConsider] = this.getConsiderSet(chosenBorder, isBorder, uncovered)
@@ -171,6 +187,8 @@ class AI {
       this.nodesChosen[coord[0]][coord[1]] = true
     for(let coord of bordersConsider)
       this.bordersFilled[coord[0]][coord[1]] = true
+
+    var [affects, maximums] = converToLinear(nodesBruteForce, bordersConsider, knownNumbers)
 
     this.putVisuals(isBorder, uncovered);
   }
