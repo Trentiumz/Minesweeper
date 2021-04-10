@@ -169,8 +169,52 @@ class AI {
     return [affects, maximums]
   }
 
-  getForcedNodes(affects, maximums, iterationsWith, currentIndex){
-    
+  // Returns number of iterations
+  // Initialize iterationsWith & currentMinesNear all to 0's
+  getPossibilities(affects, currentMinesNear, maximums, iterationsWith, currentIndex){
+    // Base case: currentIndex = last element
+    if(currentIndex == affects.length - 1){
+      // If nothing changes, are the values equal?
+      let noChangeWorks = currentMinesNear.every((element, index) => maximums[index] == element)
+
+      // Add the mine, see if everything works, undo changes
+      affects[currentIndex].forEach((element) => ++currentMinesNear[element])
+      let addMineWorks = currentMinesNear.every((element, index) => maximums[index] == element)
+      affects[currentIndex].forEach((element) => --currentMinesNear[element])
+
+      iterationsWith[currentIndex] += addMineWorks;
+
+      return noChangeWorks + addMineWorks
+    }
+
+    // With a mine
+    var totalPossibilities = 0
+
+    // See if adding a mine will keep all of the # of mines below the maximum
+    let canBeMine = true;
+    for(let affect of affects[currentIndex]){
+      if(currentMinesNear[affect] >= maximums[affect]){
+        canBeMine = false
+        break
+      }
+    }
+
+    // If we can add a mine, then we add it, see how many possibilities there are and update the iterations with the mine there.
+    if(canBeMine){
+      affects[currentIndex].forEach((val) => ++currentMinesNear[val])
+      let diff = this.getPossibilities(affects, currentMinesNear, maximums, iterationsWith, currentIndex + 1)
+      iterationsWith[currentIndex] += diff
+      totalPossibilities += diff
+      // make sure to undo changes
+      affects[currentIndex].forEach((val) => --currentMinesNear[val])
+    }
+
+    // Without a mine
+    // We go straight to the next index, and add to the total possibilities
+    let diff = this.getPossibilities(affects, currentMinesNear, maximums, iterationsWith, currentIndex + 1)
+    totalPossibilities += diff
+
+    return totalPossibilities
   }
 
   getMove(uncovered, knownSquares, flagged) {
@@ -188,7 +232,13 @@ class AI {
     for(let coord of bordersConsider)
       this.bordersFilled[coord[0]][coord[1]] = true
 
-    var [affects, maximums] = converToLinear(nodesBruteForce, bordersConsider, knownNumbers)
+    var [affects, maximums] = this.convertToLinear(nodesBruteForce, bordersConsider, knownSquares)
+
+    var possibilitiesWith = new Array(nodesBruteForce.length).fill(0)
+    var totalPossibilities = this.getPossibilities(affects, new Array(maximums.length).fill(0), maximums, possibilitiesWith, 0)
+    console.log(nodesBruteForce)
+    console.log(possibilitiesWith)
+    console.log(totalPossibilities)
 
     this.putVisuals(isBorder, uncovered);
   }
