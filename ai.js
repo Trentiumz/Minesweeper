@@ -22,8 +22,6 @@ class AI {
   constructor(rows, columns, maxConsider) {
     // Just setting up visuals for the user
     this.aiTable = document.createElement("div")
-    this.nodesChosen = []
-    this.bordersFilled = []
 
     this.rows = rows;
     this.columns = columns;
@@ -49,10 +47,6 @@ class AI {
           color = "#E97451"
         }else if(isSafe[r][c]){
           color = "#ADFF2F"
-        }else if(this.nodesChosen[r][c]){
-          color = "pink"
-        }else if(this.bordersFilled[r][c]){
-          color = "#388E8E"
         }else if(uncovered[r][c]){
           color = "#8DEEEE"
         }else{
@@ -103,6 +97,7 @@ class AI {
     var queue = [startingBorder]
     while (queue.length > 0 && considerNodes.length < this.bruteForceNodes) {
       // For all borders, add it to the ones considered in the border
+      console.log(queue)
       let [row, col] = queue.shift()
       borderConsidered[row][col] = true
 
@@ -120,11 +115,13 @@ class AI {
             let [br, bc] = borderCoord
             if (uncovered[br][bc] && !borderConsidered[br][bc]) {
               queue.push(this.coordinates[br][bc])
+              console.log("pushed " + queue)
               borderConsidered[br][bc] = true
             }
           }
         }
       }
+      console.log(queue.length)
     }
 
     // These are list versions holding coordinates
@@ -222,34 +219,47 @@ class AI {
   }
 
   getMove(uncovered, knownSquares, flagged) {
-    var borderingCoordinates = []
-    var isBorder = this.getBorders(knownSquares, borderingCoordinates);
+    let borderingCoordinates = []
+    let isBorder = this.getBorders(knownSquares, borderingCoordinates);
 
     borderingCoordinates.sort(this.getBorderComparator(this.rows, this.columns))
 
-    var chosenBorder = borderingCoordinates[0]
-    var [nodesBruteForce, bordersConsider] = this.getConsiderSet(chosenBorder, isBorder, uncovered)
-    this.nodesChosen = fillMultidimensional(false, this.rows, this.columns)
-    this.bordersFilled = fillMultidimensional(false, this.rows, this.columns)
-    for(let coord of nodesBruteForce)
-      this.nodesChosen[coord[0]][coord[1]] = true
-    for(let coord of bordersConsider)
-      this.bordersFilled[coord[0]][coord[1]] = true
+    let isSafe = fillMultidimensional(false, this.rows, this.columns)
+    let isBomb = fillMultidimensional(false, this.rows, this.columns)
 
-    var [affects, maximums] = this.convertToLinear(nodesBruteForce, bordersConsider, knownSquares)
+    while(borderingCoordinates.length > 0){
+      var chosenBorder = borderingCoordinates[0]
+      var [nodesBruteForce, bordersConsider] = this.getConsiderSet(chosenBorder, isBorder, uncovered)
+      borderingCoordinates = borderingCoordinates.filter((coord) => {
+        for(let chosen of bordersConsider)
+          if(chosen[0] == coord[0] && chosen[1] == coord[1])
+            return false
+        return true
+      })
 
-    var possibilitiesWith = new Array(nodesBruteForce.length).fill(0)
-    var totalPossibilities = this.getPossibilities(affects, new Array(maximums.length).fill(0), maximums, possibilitiesWith, 0)
+      var [affects, maximums] = this.convertToLinear(nodesBruteForce, bordersConsider, knownSquares)
 
-    var forcedSafe = possibilitiesWith.map((value, ind) => value == 0 ? ind : -1).filter((index) => index != -1).map((value) => nodesBruteForce[value]);
-    var forcedFlag = possibilitiesWith.map((value, ind) => value == totalPossibilities ? ind : -1).filter((index) => index != -1).map((value) => nodesBruteForce[value]);
+      var possibilitiesWith = new Array(nodesBruteForce.length).fill(0)
+      var totalPossibilities = this.getPossibilities(affects, new Array(maximums.length).fill(0), maximums, possibilitiesWith, 0)
 
-    var isSafe = fillMultidimensional(false, this.rows, this.columns)
-    forcedSafe.forEach((coord) => isSafe[coord[0]][coord[1]] = true);
-    var isBomb = fillMultidimensional(false, this.rows, this.columns)
-    forcedFlag.forEach((coord) => isBomb[coord[0]][coord[1]] = true)
+      let forcedSafe = possibilitiesWith.map((value, ind) => value == 0 ? ind : -1).filter((index) => index != -1).map((value) => nodesBruteForce[value]);
+      let forcedFlag = possibilitiesWith.map((value, ind) => value == totalPossibilities ? ind : -1).filter((index) => index != -1).map((value) => nodesBruteForce[value]);
+
+      forcedSafe.forEach((coord) => isSafe[coord[0]][coord[1]] = true);
+      forcedFlag.forEach((coord) => isBomb[coord[0]][coord[1]] = true)
+    }
 
     this.putVisuals(isBorder, uncovered, isSafe, isBomb);
+    let forcedSafe = []
+    let forcedFlag = []
+    for(let r = 0; r < this.rows; ++r){
+      for(let c = 0; c < this.columns; ++c){
+        if(isSafe[r][c])
+          forcedSafe.push([r, c])
+        if(isBomb[r][c])
+          forcedFlag.push([r, c])
+      }
+    }
 
     return [forcedSafe, forcedFlag]
   }
