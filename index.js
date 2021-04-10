@@ -187,5 +187,5 @@ function doMove(){
   }
 
   var uncoveredInfo = map.map((row, rInd) => row.map((element, cInd) => uncovered[rInd][cInd] ? element : -1))
-  ai.getMove(uncovered, uncoveredInfo, flagged);
+  [forcedSafe, forcedFlags] = ai.getMove(uncovered, uncoveredInfo, flagged);
 }

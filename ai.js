@@ -36,7 +36,7 @@ class AI {
     console.log("added")
   }
 
-  putVisuals(isBorder, uncovered) {
+  putVisuals(isBorder, uncovered, isSafe, isBomb) {
     var tableCopy = document.getElementById("gameTable").cloneNode(true)
     this.aiTable.innerHTML = ""
     this.aiTable.appendChild(tableCopy)
@@ -45,7 +45,11 @@ class AI {
     for (let r = 0; r < this.rows; ++r) {
       for (let c = 0; c < this.columns; ++c) {
         let color = ""
-        if(this.nodesChosen[r][c]){
+        if(isBomb[r][c]){
+          color = "#E97451"
+        }else if(isSafe[r][c]){
+          color = "#ADFF2F"
+        }else if(this.nodesChosen[r][c]){
           color = "pink"
         }else if(this.bordersFilled[r][c]){
           color = "#388E8E"
@@ -236,11 +240,18 @@ class AI {
 
     var possibilitiesWith = new Array(nodesBruteForce.length).fill(0)
     var totalPossibilities = this.getPossibilities(affects, new Array(maximums.length).fill(0), maximums, possibilitiesWith, 0)
-    console.log(nodesBruteForce)
-    console.log(possibilitiesWith)
-    console.log(totalPossibilities)
 
-    this.putVisuals(isBorder, uncovered);
+    var forcedSafe = possibilitiesWith.map((value, ind) => value == 0 ? ind : -1).filter((index) => index != -1).map((value) => nodesBruteForce[value]);
+    var forcedFlag = possibilitiesWith.map((value, ind) => value == totalPossibilities ? ind : -1).filter((index) => index != -1).map((value) => nodesBruteForce[value]);
+
+    var isSafe = fillMultidimensional(false, this.rows, this.columns)
+    forcedSafe.forEach((coord) => isSafe[coord[0]][coord[1]] = true);
+    var isBomb = fillMultidimensional(false, this.rows, this.columns)
+    forcedFlag.forEach((coord) => isBomb[coord[0]][coord[1]] = true)
+
+    this.putVisuals(isBorder, uncovered, isSafe, isBomb);
+
+    return [forcedSafe, forcedFlag]
   }
 }
 
