@@ -31,14 +31,12 @@ class AI {
     this.coordinates = range(0, rows).map((row, rInd) => range(0, columns).map((obj, cInd) => [rInd, cInd]))
 
     document.getElementById("aiFormat").appendChild(this.aiTable)
-    console.log("added")
   }
 
   putVisuals(isBorder, uncovered, isSafe, isBomb) {
     var tableCopy = document.getElementById("gameTable").cloneNode(true)
     this.aiTable.innerHTML = ""
     this.aiTable.appendChild(tableCopy)
-    console.log("changed")
 
     for (let r = 0; r < this.rows; ++r) {
       for (let c = 0; c < this.columns; ++c) {
@@ -88,16 +86,16 @@ class AI {
     }
   }
 
-  getConsiderSet(startingBorder, borders, uncovered) {
+  getConsiderSet(startingBorder, borders, uncovered, flagged) {
     var toConsiderNode = fillMultidimensional(false, this.rows, this.columns)
     var borderConsidered = fillMultidimensional(false, this.rows, this.columns)
 
     var considerNodes = []
+    let flaggedCount = 0
 
     var queue = [startingBorder]
-    while (queue.length > 0 && considerNodes.length < this.bruteForceNodes) {
+    while (queue.length > 0 && considerNodes.length - flaggedCount < this.bruteForceNodes) {
       // For all borders, add it to the ones considered in the border
-      console.log(queue)
       let [row, col] = queue.shift()
       borderConsidered[row][col] = true
 
@@ -109,19 +107,18 @@ class AI {
           // If is covered and we haven't added it yet, add it to coveredConsider
           toConsiderNode[r][c] = true
           considerNodes.push([r, c])
+          flaggedCount += flagged[r][c]
 
           // Add all of its adjacent borders to the queue
           for (let borderCoord of getAdjacents(r, c, this.rows, this.columns)) {
             let [br, bc] = borderCoord
             if (uncovered[br][bc] && !borderConsidered[br][bc]) {
               queue.push(this.coordinates[br][bc])
-              console.log("pushed " + queue)
               borderConsidered[br][bc] = true
             }
           }
         }
       }
-      console.log(queue.length)
     }
 
     // These are list versions holding coordinates
@@ -147,7 +144,6 @@ class AI {
         }
       }
     }
-
     return [considerNodes, borderFilled]
   }
 
@@ -232,7 +228,7 @@ class AI {
 
     while(borderingCoordinates.length > 0){
       var chosenBorder = borderingCoordinates[0]
-      var [nodesBruteForce, bordersConsider] = this.getConsiderSet(chosenBorder, isBorder, uncovered)
+      var [nodesBruteForce, bordersConsider] = this.getConsiderSet(chosenBorder, isBorder, uncovered, flagged)
       borderingCoordinates = borderingCoordinates.filter((coord) => {
         for(let chosen of bordersConsider)
           if(chosen[0] == coord[0] && chosen[1] == coord[1])

@@ -119,6 +119,12 @@ function initializeMap(notAllowed) {
 }
 
 function click(coordinates) {
+  tapCell(coordinates)
+  renderMap(uncovered, map, mineMap, flagged)
+}
+
+// only renders logic when a cell is tapped
+function tapCell(coordinates){
   if(finished)
     return;
   if (!initialized) {
@@ -143,8 +149,6 @@ function click(coordinates) {
   if(allUncovered){
     revealResult("winScreen")
   }
-
-  renderMap(uncovered, map, mineMap, flagged)
 }
 
 function rightClick(coordinates){
@@ -190,6 +194,6 @@ function doMove(){
   let [forcedSafe, forcedFlags] = ai.getMove(uncovered, uncoveredInfo, flagged);
 
   forcedFlags.forEach((coord) => flagged[coord[0]][coord[1]] = true)
+  forcedSafe.forEach((coord) => tapCell(coord))
   renderMap(uncovered, map, mineMap, flagged)
-  forcedSafe.forEach((coord) => click(coord))
 }
