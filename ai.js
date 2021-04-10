@@ -86,6 +86,18 @@ class AI {
     }
   }
 
+  getIsUsefulStartingPoint(uncovered, flagged){
+    var rows = this.rows
+    var columns = this.columns
+    return function(coord){
+      for(let adjCoord of getAdjacents(coord[0], coord[1], rows, columns)){
+        if(!uncovered[adjCoord[0]][adjCoord[1]] && !flagged[adjCoord[0]][adjCoord[1]])
+          return true
+      }
+      return false
+    }
+  }
+
   getConsiderSet(startingBorder, borders, uncovered, flagged) {
     var toConsiderNode = fillMultidimensional(false, this.rows, this.columns)
     var borderConsidered = fillMultidimensional(false, this.rows, this.columns)
@@ -231,10 +243,10 @@ class AI {
     var bombProbability = fillMultidimensional(-1, this.rows, this.columns)
 
     while(borderingCoordinates.length > 0){
-      var chosenBorder = borderingCoordinates.find(coord => !flagged[coord[0]][coord[1]])
+      var chosenBorder = borderingCoordinates.find(this.getIsUsefulStartingPoint(uncovered, flagged))
       if(chosenBorder == null)
         break
-        
+
       var [nodesBruteForce, bordersConsider] = this.getConsiderSet(chosenBorder, isBorder, uncovered, flagged)
       borderingCoordinates = borderingCoordinates.filter((coord) => {
         for(let chosen of bordersConsider)
@@ -271,15 +283,15 @@ class AI {
       }
     }
 
-    var mostLikelyBomb = []
+    var leastLikelyBomb = []
     for(let r = 0; r < this.rows; ++r)
       for(let c = 0; c < this.columns; ++c){
         if(bombProbability[r][c] != -1 && !flagged[r][c])
-          mostLikelyBomb.push([[r, c], bombProbability[r][c]])
+          leastLikelyBomb.push([[r, c], bombProbability[r][c]])
       }
-    mostLikelyBomb.sort((a, b) => a[1] - b[1])
+    leastLikelyBomb.sort((a, b) => a[1] - b[1])
 
-    return [forcedSafe, forcedFlag, mostLikelyBomb]
+    return [forcedSafe, forcedFlag, leastLikelyBomb]
   }
 }
 

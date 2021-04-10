@@ -1,10 +1,10 @@
 // arr[i] = [rows, columns]
 const dimensForLevel = [
   [10, 10],
-  [20, 20],
-  [50, 50]
+  [16, 16],
+  [24, 24]
 ];
-const minesForLevel = [8, 50, 500]
+const minesForLevel = [10, 40, 100]
 
 const aiConsider = 10
 
@@ -191,11 +191,16 @@ function doMove(){
   }
 
   var uncoveredInfo = map.map((row, rInd) => row.map((element, cInd) => uncovered[rInd][cInd] ? element : -1))
-  let [forcedSafe, forcedFlags, mostLikelyBomb] = ai.getMove(uncovered, uncoveredInfo, flagged);
+  let [forcedSafe, forcedFlags, leastLikelyBomb] = ai.getMove(uncovered, uncoveredInfo, flagged);
 
+  if(forcedSafe.length == 0 && !forcedFlags.some((coord) => !flagged[coord[0]][coord[1]]) && leastLikelyBomb.length > 0){
+    if(confirm("Oh No! It seems ml^3 couldn't make a definite decision... would you like to proceed with a cell that has a " + Math.floor(leastLikelyBomb[0][1] * 100) + "% chance of being a bomb")){
+      tapCell(leastLikelyBomb[0][0])
+    }
+  }
   forcedFlags.forEach((coord) => flagged[coord[0]][coord[1]] = true)
   forcedSafe.forEach((coord) => tapCell(coord))
 
-  console.log(mostLikelyBomb)
+  console.log(leastLikelyBomb)
   renderMap(uncovered, map, mineMap, flagged)
 }
