@@ -1,8 +1,8 @@
 // arr[i] = [rows, columns]
 const dimensForLevel = [
   [10, 10],
-  [16, 16],
-  [24, 24]
+  [14, 18],
+  [20, 28]
 ];
 const minesForLevel = [10, 40, 100]
 
