@@ -187,5 +187,9 @@ function doMove(){
   }
 
   var uncoveredInfo = map.map((row, rInd) => row.map((element, cInd) => uncovered[rInd][cInd] ? element : -1))
-  [forcedSafe, forcedFlags] = ai.getMove(uncovered, uncoveredInfo, flagged);
+  let [forcedSafe, forcedFlags] = ai.getMove(uncovered, uncoveredInfo, flagged);
+
+  forcedFlags.forEach((coord) => flagged[coord[0]][coord[1]] = true)
+  renderMap(uncovered, map, mineMap, flagged)
+  forcedSafe.forEach((coord) => click(coord))
 }
