@@ -152,7 +152,7 @@ class AI {
   }
 
   // Params: The nodes to iterate all possibilities for, the borders to consider, # of mines information
-  convertToLinear(nodesToBruteForce, bordersToConsider, knownNumbers){
+  convertToLinear(nodesToBruteForce, bordersToConsider, knownNumbers, flagged){
     var affects = nodesToBruteForce.map(function(coord){
       let [fr, fc] = coord
       var toreturn = []
@@ -166,17 +166,18 @@ class AI {
     })
 
     var maximums = bordersToConsider.map((coord) => knownNumbers[coord[0]][coord[1]])
+    var linearFlagged = nodesToBruteForce.map((coord) => flagged[coord[0]][coord[1]])
 
-    return [affects, maximums]
+    return [affects, maximums, linearFlagged]
   }
 
   // Returns number of iterations
   // Initialize iterationsWith & currentMinesNear all to 0's
-  getPossibilities(affects, currentMinesNear, maximums, iterationsWith, currentIndex){
+  getPossibilities(affects, currentMinesNear, maximums, iterationsWith, currentIndex, flagged){
     // Base case: currentIndex = last element
     if(currentIndex == affects.length - 1){
       // If nothing changes, are the values equal?
-      let noChangeWorks = currentMinesNear.every((element, index) => maximums[index] == element)
+      let noChangeWorks = currentMinesNear.every((element, index) => maximums[index] == element) && !flagged[currentIndex]
 
       // Add the mine, see if everything works, undo changes
       affects[currentIndex].forEach((element) => ++currentMinesNear[element])
@@ -188,8 +189,8 @@ class AI {
       return noChangeWorks + addMineWorks
     }
 
-    // With a mine
     var totalPossibilities = 0
+    // With a mine
 
     // See if adding a mine will keep all of the # of mines below the maximum
     let canBeMine = true;
@@ -203,7 +204,7 @@ class AI {
     // If we can add a mine, then we add it, see how many possibilities there are and update the iterations with the mine there.
     if(canBeMine){
       affects[currentIndex].forEach((val) => ++currentMinesNear[val])
-      let diff = this.getPossibilities(affects, currentMinesNear, maximums, iterationsWith, currentIndex + 1)
+      let diff = this.getPossibilities(affects, currentMinesNear, maximums, iterationsWith, currentIndex + 1, flagged)
       iterationsWith[currentIndex] += diff
       totalPossibilities += diff
       // make sure to undo changes
@@ -212,8 +213,10 @@ class AI {
 
     // Without a mine
     // We go straight to the next index, and add to the total possibilities
-    let diff = this.getPossibilities(affects, currentMinesNear, maximums, iterationsWith, currentIndex + 1)
-    totalPossibilities += diff
+    if(!flagged[currentIndex]){
+      let diff = this.getPossibilities(affects, currentMinesNear, maximums, iterationsWith, currentIndex + 1, flagged)
+      totalPossibilities += diff
+    }
 
     return totalPossibilities
   }
@@ -237,10 +240,10 @@ class AI {
         return true
       })
 
-      var [affects, maximums] = this.convertToLinear(nodesBruteForce, bordersConsider, knownSquares)
+      var [affects, maximums, linearFlagged] = this.convertToLinear(nodesBruteForce, bordersConsider, knownSquares, flagged)
 
       var possibilitiesWith = new Array(nodesBruteForce.length).fill(0)
-      var totalPossibilities = this.getPossibilities(affects, new Array(maximums.length).fill(0), maximums, possibilitiesWith, 0)
+      var totalPossibilities = this.getPossibilities(affects, new Array(maximums.length).fill(0), maximums, possibilitiesWith, 0, linearFlagged)
 
       let forcedSafe = possibilitiesWith.map((value, ind) => value == 0 ? ind : -1).filter((index) => index != -1).map((value) => nodesBruteForce[value]);
       let forcedFlag = possibilitiesWith.map((value, ind) => value == totalPossibilities ? ind : -1).filter((index) => index != -1).map((value) => nodesBruteForce[value]);

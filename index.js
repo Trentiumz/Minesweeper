@@ -121,14 +121,14 @@ function initializeMap(notAllowed) {
 function click(coordinates) {
   if(finished)
     return;
-  var [row, col] = coordinates
-  if(flagged.length > 0 && flagged[row][col])
-    return;
-
   if (!initialized) {
     initializeMap(coordinates);
     initialized = true;
   }
+  var [row, col] = coordinates
+  if(flagged.length > 0 && flagged[row][col])
+    return;
+
   if(mineMap[row][col]){
     revealResult("loseScreen")
   }
