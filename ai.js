@@ -144,6 +144,8 @@ class AI {
         }
       }
     }
+
+    console.log(considerNodes.length - flaggedCount)
     return [considerNodes, borderFilled]
   }
 
@@ -226,8 +228,13 @@ class AI {
     let isSafe = fillMultidimensional(false, this.rows, this.columns)
     let isBomb = fillMultidimensional(false, this.rows, this.columns)
 
+    var bombProbability = fillMultidimensional(-1, this.rows, this.columns)
+
     while(borderingCoordinates.length > 0){
-      var chosenBorder = borderingCoordinates[0]
+      var chosenBorder = borderingCoordinates.find(coord => !flagged[coord[0]][coord[1]])
+      if(chosenBorder == null)
+        break
+        
       var [nodesBruteForce, bordersConsider] = this.getConsiderSet(chosenBorder, isBorder, uncovered, flagged)
       borderingCoordinates = borderingCoordinates.filter((coord) => {
         for(let chosen of bordersConsider)
@@ -244,11 +251,15 @@ class AI {
       let forcedSafe = possibilitiesWith.map((value, ind) => value == 0 ? ind : -1).filter((index) => index != -1).map((value) => nodesBruteForce[value]);
       let forcedFlag = possibilitiesWith.map((value, ind) => value == totalPossibilities ? ind : -1).filter((index) => index != -1).map((value) => nodesBruteForce[value]);
 
+      nodesBruteForce.forEach((item, i) => {
+        bombProbability[item[0]][item[1]] = possibilitiesWith[i] / totalPossibilities
+      });
+
+
       forcedSafe.forEach((coord) => isSafe[coord[0]][coord[1]] = true);
       forcedFlag.forEach((coord) => isBomb[coord[0]][coord[1]] = true)
     }
 
-    this.putVisuals(isBorder, uncovered, isSafe, isBomb);
     let forcedSafe = []
     let forcedFlag = []
     for(let r = 0; r < this.rows; ++r){
@@ -260,7 +271,15 @@ class AI {
       }
     }
 
-    return [forcedSafe, forcedFlag]
+    var mostLikelyBomb = []
+    for(let r = 0; r < this.rows; ++r)
+      for(let c = 0; c < this.columns; ++c){
+        if(bombProbability[r][c] != -1 && !flagged[r][c])
+          mostLikelyBomb.push([[r, c], bombProbability[r][c]])
+      }
+    mostLikelyBomb.sort((a, b) => a[1] - b[1])
+
+    return [forcedSafe, forcedFlag, mostLikelyBomb]
   }
 }
 

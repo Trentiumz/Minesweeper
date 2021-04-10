@@ -191,9 +191,11 @@ function doMove(){
   }
 
   var uncoveredInfo = map.map((row, rInd) => row.map((element, cInd) => uncovered[rInd][cInd] ? element : -1))
-  let [forcedSafe, forcedFlags] = ai.getMove(uncovered, uncoveredInfo, flagged);
+  let [forcedSafe, forcedFlags, mostLikelyBomb] = ai.getMove(uncovered, uncoveredInfo, flagged);
 
   forcedFlags.forEach((coord) => flagged[coord[0]][coord[1]] = true)
   forcedSafe.forEach((coord) => tapCell(coord))
+
+  console.log(mostLikelyBomb)
   renderMap(uncovered, map, mineMap, flagged)
 }
